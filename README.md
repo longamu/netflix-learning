@@ -1,2 +1,2 @@
 # netflix-learning
-Netflix OSS基础知识
+Netflix OSS核心组件学习
