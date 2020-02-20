@@ -139,4 +139,5 @@ public class TestCase {
         URL url = ConfigurationUtils.locate("userHome.properties");
         System.out.println(url.toString());
     }
+
 }
