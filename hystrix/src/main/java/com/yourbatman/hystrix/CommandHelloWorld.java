@@ -8,12 +8,15 @@ public class CommandHelloWorld extends HystrixCommand<String> {
 
     // 指定一个HystrixCommandGroupKey，这样熔断策略会按照此组执行
     public CommandHelloWorld(String name) {
-        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        super(HystrixCommandGroupKey.Factory.asKey("MyAppGroup"));
         this.name = name;
     }
 
     @Override
     protected String run() {
+        if(name == null){
+            throw new NullPointerException();
+        }
         return "Hello " + name + "!";
     }
 

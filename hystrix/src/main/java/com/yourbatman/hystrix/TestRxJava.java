@@ -47,15 +47,21 @@ public class TestRxJava {
         // 三种执行方式：
 
         // 1、普通方式
-        // String s = new CommandHelloWorld("Bob").execute();
-        // System.out.println(s);
+        String s = new CommandHelloWorld("Bob").execute();
+        System.out.println(s);
+
+        String fallbackValue = new CommandHelloWorld(null).execute();
+        // 说明：若你没有提供fallback函数，那结果是：
+        // com.netflix.hystrix.exception.HystrixRuntimeException: CommandHelloWorld failed and no fallback available.
+        System.out.println(fallbackValue);
+
 
         // 2、异步方式。什么时候需要时候什么时候get
         // Future<String> s = new CommandHelloWorld("Bob").queue();
         // System.out.println(s.get());
 
         // 3、RxJava方式。吞吐量更高，但对程序员的要求更高
-        Observable<String> s = new CommandHelloWorld("Bob").observe();
-        s.subscribe(d -> System.out.println(d));
+        // Observable<String> s = new CommandHelloWorld("Bob").observe();
+        // s.subscribe(d -> System.out.println(d));
     }
 }
