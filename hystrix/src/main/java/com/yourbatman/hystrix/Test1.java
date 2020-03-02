@@ -76,4 +76,9 @@ public class Test1 {
         System.out.println(commandProperties.executionTimeoutEnabled().get());
         System.out.println(commandProperties.executionTimeoutInMilliseconds().get());
     }
+
+    public strictfp final synchronized static void main(String[] args) {
+
+    }
+
 }
