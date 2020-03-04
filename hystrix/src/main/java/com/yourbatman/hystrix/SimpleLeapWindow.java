@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SimpleLeapWindow1 {
+public class SimpleLeapWindow {
 
     public static void main(String[] args) {
         calNormal(new int[]{-1, 4, 7, -3, 8, 5, -2, 6}, 2);
