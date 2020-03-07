@@ -64,4 +64,34 @@ public class TestRxJava {
         // Observable<String> s = new CommandHelloWorld("Bob").observe();
         // s.subscribe(d -> System.out.println(d));
     }
+
+    @Test
+    public void fun3() {
+        Observable.just(1, 2, 3, 4)
+                .doOnNext((d) -> System.out.println("我是doOnNext" + d))
+                .doOnCompleted(() -> System.out.println("我是doOnCompleted"))
+                // onErrorResumeNext只有发射数据是抛错了才会执行它。比如这里牛可以fallabck了
+                .onErrorResumeNext(Observable.just(6, 7, 8, 9))
+                .doOnTerminate(() -> System.out.println("我是doOnTerminate"))
+                .doOnUnsubscribe(() -> System.out.println("我是doOnUnsubscribe"))
+                .subscribe((d) -> System.out.println(d));
+
+        System.out.println("===============模拟发射数据过程中出现异常===============");
+
+        // 模拟发射数据时发生错误了（若正常执行，效果完全同上）
+        Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            subscriber.onStart();
+            subscriber.onNext(1);
+            subscriber.onNext(2);
+            System.out.println(1 / 0);
+            subscriber.onNext(3);
+            subscriber.onNext(4);
+            subscriber.onCompleted(); // 请别忘了告诉结束。否则doOnCompleted不会执行的
+        }).doOnNext((d) -> System.out.println("我是doOnNext" + d))
+                .doOnCompleted(() -> System.out.println("我是doOnCompleted"))
+                .onErrorResumeNext(Observable.just(6, 7, 8, 9))
+                .doOnTerminate(() -> System.out.println("我是doOnTerminate"))
+                .doOnUnsubscribe(() -> System.out.println("我是doOnUnsubscribe"))
+                .subscribe((d) -> System.out.println(d));
+    }
 }
