@@ -2,6 +2,7 @@ package com.yourbatman.hystrix;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.exception.HystrixBadRequestException;
 
 public class CommandHelloWorld extends HystrixCommand<String> {
     private final String name;
@@ -15,7 +16,8 @@ public class CommandHelloWorld extends HystrixCommand<String> {
     @Override
     protected String run() {
         if(name == null){
-            throw new NullPointerException();
+            // throw new NullPointerException();
+            throw new HystrixBadRequestException("错误的请求");
         }
         return "Hello " + name + "!";
     }

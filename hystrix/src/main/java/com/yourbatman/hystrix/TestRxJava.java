@@ -2,10 +2,13 @@ package com.yourbatman.hystrix;
 
 import org.junit.Test;
 import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TestRxJava {
 
@@ -93,5 +96,49 @@ public class TestRxJava {
                 .doOnTerminate(() -> System.out.println("我是doOnTerminate"))
                 .doOnUnsubscribe(() -> System.out.println("我是doOnUnsubscribe"))
                 .subscribe((d) -> System.out.println(d));
+    }
+
+    @Test
+    public void fun4() throws InterruptedException {
+        Integer[] data = {1, 2, 3, 4, 5};
+        Subscription subscribe = Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            String threadName = Thread.currentThread().getName();
+
+            subscriber.onStart();
+            for (int i = 0; i < 6; i++) {
+                subscriber.onNext(i);
+                System.out.printf("[%s]发送数据:%s\n", threadName, i);
+            }
+            subscriber.onCompleted();
+
+        }).doOnSubscribe(() -> data[4] = 10) // 发射之前执行。可用于更改数据源
+                // .delay(1, TimeUnit.SECONDS)
+                // .doOnNext()
+                .subscribeOn(Schedulers.io()) //创建/发射数据使用的是IO线程
+                .observeOn(Schedulers.newThread()) // 后面的观察者统一在新的线程上观察
+                .doOnUnsubscribe(() -> System.out.println(Thread.currentThread().getName() + "取消订阅喽~~~~~"))
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onCompleted() {
+                        String threadName = Thread.currentThread().getName();
+                        System.out.printf("[%s]监听结束\n", threadName);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(Integer i) {
+                        String threadName = Thread.currentThread().getName();
+                        System.out.printf("[%s]监听到数据:%s\n", threadName, i);
+                    }
+                });
+
+        TimeUnit.SECONDS.sleep(2);
+        if (subscribe.isUnsubscribed()) {
+            subscribe.unsubscribe();
+        }
+
     }
 }
